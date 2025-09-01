@@ -1,20 +1,22 @@
 import React, { useContext } from "react";
 import { NavLink } from "react-router";
 import { AuthContext } from "../provider/AuthProvider";
+import { UserInfoContext } from "../provider/UserInfoProvider";
 
 const Navbar = () => {
-    const {user  , logout} = useContext(AuthContext)
-    const handleLogOut = ()=>{
-        logout()
-        .then(res=>{
-            console.log(res);
-            
-        })
-        .catch(err=>{
-            console.log(err);
-            
-        })
-    }
+  const { user, logout } = useContext(AuthContext)
+  const userInfo = useContext(UserInfoContext)
+  const handleLogOut = () => {
+    logout()
+      .then(res => {
+        console.log(res);
+
+      })
+      .catch(err => {
+        console.log(err);
+
+      })
+  }
   return (
     <div className="navbar bg-white shadow-md px-4">
       {/* Left side (Logo + Mobile Menu) */}
@@ -47,16 +49,45 @@ const Navbar = () => {
           >
             <li>
               <NavLink
-                to="/addassingmentans"
+                to="/"
                 className={({ isActive }) =>
                   isActive
                     ? "text-indigo-600 font-medium"
                     : "text-gray-700 hover:text-indigo-500"
                 }
               >
-                Submit Answer
+                Home
               </NavLink>
             </li>
+            {
+              userInfo?.role != "admin" && <li>
+                <NavLink
+                  to="/addassingmentans"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-indigo-600 font-medium"
+                      : "text-gray-700 hover:text-indigo-500"
+                  }
+                >
+                  Submit Answer
+                </NavLink>
+              </li>
+            }
+            {
+              userInfo?.role === "admin" &&
+              <li>
+                <NavLink
+                  to="/addassingments"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-indigo-600 font-medium"
+                      : "text-gray-700 hover:text-indigo-500"
+                  }
+                >
+                  Add Assignment
+                </NavLink>
+              </li>
+            }
           </ul>
         </div>
 
@@ -69,16 +100,45 @@ const Navbar = () => {
         <ul className="menu menu-horizontal px-1 gap-4">
           <li>
             <NavLink
-              to="/addassingmentans"
+              to="/"
               className={({ isActive }) =>
                 isActive
                   ? "text-indigo-600 font-medium"
                   : "text-gray-700 hover:text-indigo-500"
               }
             >
-              Submit Answer
+              Home
             </NavLink>
           </li>
+          {
+            userInfo.role != "admin" && <li>
+              <NavLink
+                to="/addassingmentans"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-indigo-600 font-medium"
+                    : "text-gray-700 hover:text-indigo-500"
+                }
+              >
+                Submit Answer
+              </NavLink>
+            </li>
+          }
+          {
+            userInfo?.role === "admin" &&
+            <li>
+              <NavLink
+                to="/addassingments"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-indigo-600 font-medium"
+                    : "text-gray-700 hover:text-indigo-500"
+                }
+              >
+                Add Assignment
+              </NavLink>
+            </li>
+          }
         </ul>
       </div>
 

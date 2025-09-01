@@ -6,6 +6,7 @@ import Home from "../pages/Home/Home";
 import AddAssignment from "../pages/Add/AddAssignment";
 import AdminRoleRoute from "./AdminRoleRoute";
 import Allassignments from "../pages/Allassignments/Allassignments";
+import AddAssingments from "../pages/AddAssingments/AddAssingments";
 
 
 
@@ -31,6 +32,14 @@ export const router = createBrowserRouter([
                 element: <PrivateRoute>
                     <AdminRoleRoute>
                         <Allassignments></Allassignments>
+                    </AdminRoleRoute>
+                </PrivateRoute>
+            },
+            {
+                path: "/addassingments",
+                element: <PrivateRoute>
+                    <AdminRoleRoute>
+                        <AddAssingments></AddAssingments>
                     </AdminRoleRoute>
                 </PrivateRoute>
             }

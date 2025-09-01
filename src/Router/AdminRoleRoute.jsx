@@ -8,7 +8,7 @@ const AdminRoleRoute = ({children}) => {
     console.log(userInfo);
 
     if(!userInfo) return <h1>heeeee.....</h1>
-    if(userInfo.role != "admin") return <Navigate to={"/addassingmentans"}></Navigate>
+    if(userInfo?.role != "admin") return <Navigate to={"/addassingmentans"}></Navigate>
 
     return (
         children
