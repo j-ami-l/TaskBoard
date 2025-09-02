@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import axios from "axios";
 import { AuthContext } from "../../provider/AuthProvider";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import { UserInfoContext } from "../../provider/UserInfoProvider";
@@ -7,13 +6,11 @@ import { Link } from "react-router";
 
 const AddAssingments = () => {
     const [count, setCount] = useState(1);
-    const { user } = useContext(AuthContext)
-    const userInfo = useContext(UserInfoContext)
-    console.log(userInfo);
+    const { user } = useContext(AuthContext);
+    const {userInfo} = useContext(UserInfoContext);
 
+    const api = useAxiosSecure();
 
-
-    const api = useAxiosSecure()
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -31,7 +28,7 @@ const AddAssingments = () => {
             minute: "2-digit",
         });
 
-        // Collect answers dynamically
+        // Collect questions dynamically
         const questions = {};
         for (let i = 1; i <= count; i++) {
             questions[`qst${i}`] = form[`qst${i}`].value.trim();
@@ -47,9 +44,9 @@ const AddAssingments = () => {
 
         try {
             const res = await api.post("/addqst", payload);
-            if(res.data.exits == 1) {
-                alert("Assignment already exits for this section!");
-                return
+            if (res.data.exits == 1) {
+                alert("Assignment already exists for this section!");
+                return;
             }
             console.log("Response:", res.data);
             alert("Assignment submitted successfully!");
@@ -63,13 +60,18 @@ const AddAssingments = () => {
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-            {userInfo.role === "admin" && <Link to={'/allassignments'}><button className="btn my-5 mx-auto">Students Assignments Ans</button></Link>}
+            {userInfo.role === "admin" && (
+                <Link to={"/allassignments"}>
+                    <button className="btn my-5 mx-auto">Students Assignments Ans</button>
+                </Link>
+            )}
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-6">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
                     Add Assignment Qst
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Section */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Section Ex: 3AM
@@ -82,6 +84,8 @@ const AddAssingments = () => {
                             required
                         />
                     </div>
+
+                    {/* Deadline */}
                     <div className="form-control">
                         <label className="label">
                             <span className="label-text text-gray-700">Assignment Deadline</span>
@@ -93,6 +97,8 @@ const AddAssingments = () => {
                             required
                         />
                     </div>
+
+                    {/* Questions */}
                     <div className="space-y-3">
                         {[...Array(count)].map((_, index) => (
                             <div key={index}>
@@ -109,14 +115,31 @@ const AddAssingments = () => {
                         ))}
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={() => setCount(count + 1)}
-                        className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors"
-                    >
-                        + Add Question
-                    </button>
+                    {/* Buttons */}
+                    <div className="flex gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setCount(count + 1)}
+                            className="flex-1 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                        >
+                            + Add Question
+                        </button>
 
+                        <button
+                            type="button"
+                            onClick={() => setCount((prev) => Math.max(1, prev - 1))}
+                            disabled={count === 1}
+                            className={`flex-1 py-2 rounded-lg transition-colors ${
+                                count === 1
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-red-600 text-white hover:bg-red-700"
+                            }`}
+                        >
+                            − Remove Question
+                        </button>
+                    </div>
+
+                    {/* Submit */}
                     <button
                         type="submit"
                         className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"

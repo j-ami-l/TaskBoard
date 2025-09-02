@@ -1,41 +1,29 @@
 import React, { useContext, useState } from "react";
-import axios from "axios";
 import { AuthContext } from "../../provider/AuthProvider";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
-import { UserInfoContext } from "../../provider/UserInfoProvider";
-import { Link } from "react-router";
 
 const AddAssignmentAns = () => {
     const [count, setCount] = useState(1);
-    const { user } = useContext(AuthContext)
-    
+    const { user } = useContext(AuthContext);
+    const api = useAxiosSecure();
 
-
-    const api = useAxiosSecure()
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const form = e.target;
         const name = form.name.value.trim();
         const UniID = form.UniID.value.trim();
-        const email = user.email
+        const email = user.email;
         const section = form.section.value.trim();
         const checked = false;
+
         // Collect answers dynamically
         const answers = {};
         for (let i = 1; i <= count; i++) {
             answers[`qst${i}`] = form[`qst${i}`].value.trim();
         }
 
-        const payload = {
-            name,
-            UniID,
-            answers,
-            email,
-            section,
-            checked
-        };
-
+        const payload = { name, UniID, answers, email, section, checked };
 
         try {
             const res = await api.post("/addans", payload);
@@ -57,6 +45,7 @@ const AddAssignmentAns = () => {
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Name */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Your Name
@@ -71,6 +60,7 @@ const AddAssignmentAns = () => {
                         />
                     </div>
 
+                    {/* Uni ID */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             University ID Ex:C24****
@@ -83,6 +73,8 @@ const AddAssignmentAns = () => {
                             required
                         />
                     </div>
+
+                    {/* Section */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Section Ex: 3AM
@@ -96,6 +88,7 @@ const AddAssignmentAns = () => {
                         />
                     </div>
 
+                    {/* Questions */}
                     <div className="space-y-3">
                         {[...Array(count)].map((_, index) => (
                             <div key={index}>
@@ -112,13 +105,29 @@ const AddAssignmentAns = () => {
                         ))}
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={() => setCount(count + 1)}
-                        className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors"
-                    >
-                        + Add Question
-                    </button>
+                    {/* Buttons */}
+                    <div className="flex gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setCount(count + 1)}
+                            className="flex-1 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                        >
+                            + Add Answer
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setCount((prev) => Math.max(1, prev - 1))}
+                            disabled={count === 1}
+                            className={`flex-1 py-2 rounded-lg transition-colors ${
+                                count === 1
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-red-600 text-white hover:bg-red-700"
+                            }`}
+                        >
+                            − Remove Answer
+                        </button>
+                    </div>
 
                     <button
                         type="submit"

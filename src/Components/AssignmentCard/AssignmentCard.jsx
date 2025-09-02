@@ -3,17 +3,17 @@ import { UserInfoContext } from '../../provider/UserInfoProvider';
 import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import { AuthContext } from '../../provider/AuthProvider';
 
-const AssignmentCard = ({ assignmentsqst , refetch }) => {
-    const api = useAxiosSecure()
-    const { user } = useContext(AuthContext)
+const AssignmentCard = ({ assignmentsqst, refetch }) => {
+    const api = useAxiosSecure();
+    const { user } = useContext(AuthContext);
+
     const handleDltAssingment = async (id) => {
         try {
             const res = await api.delete('/dltassignment', {
-                data: { id, email: user.email }  // DELETE requires "data" key
+                data: { id, email: user.email },
             });
-            console.log("Deleted:", res.data);
-            if(res.data?.deletedCount){
-                refetch()
+            if (res.data?.deletedCount) {
+                refetch();
             }
             alert("Assignment deleted!");
         } catch (err) {
@@ -21,8 +21,9 @@ const AssignmentCard = ({ assignmentsqst , refetch }) => {
         }
     };
 
-    const { questions, section, email, expiredDate, readableDate } = assignmentsqst;
-    const userInfo = useContext(UserInfoContext)
+    const { questions, section, readableDate } = assignmentsqst;
+    const {userInfo} = useContext(UserInfoContext);
+
     return (
         <div style={styles.card}>
             {/* Header Section */}
@@ -48,42 +49,55 @@ const AssignmentCard = ({ assignmentsqst , refetch }) => {
                     </div>
                 ))}
             </div>
-            {userInfo.role === "admin" && <button className='btn' onClick={() => handleDltAssingment(assignmentsqst._id)}>Delete</button>}
+
+            {/* Footer */}
+            {userInfo.role === "admin" && (
+                <div style={styles.footer}>
+                    <button
+                        onClick={() => handleDltAssingment(assignmentsqst._id)}
+                        style={styles.deleteBtn}
+                    >
+                        🗑 Delete Assignment
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
 
+// ✅ Responsive styles
 const styles = {
     card: {
         backgroundColor: '#fff',
         borderRadius: '12px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        padding: '24px',
-        margin: '20px 0',
+        padding: '5%',
+        margin: '16px auto',
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-        maxWidth: '800px',
-        marginLeft: 'auto',
-        marginRight: 'auto',
+        maxWidth: '95%', // flexible on mobile
     },
     header: {
         display: 'flex',
+        flexWrap: 'wrap', // stack on mobile
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '15px',
         paddingBottom: '12px',
         borderBottom: '2px solid #f0f0f0',
+        gap: '10px',
     },
     title: {
         color: '#2c3e50',
         margin: 0,
-        fontSize: '1.8rem',
+        fontSize: 'clamp(1.2rem, 4vw, 1.8rem)', // responsive font
     },
     sectionBadge: {
         backgroundColor: '#e8f4fc',
-        padding: '8px 16px',
+        padding: '6px 12px',
         borderRadius: '20px',
         fontWeight: '600',
         color: '#2c3e50',
+        fontSize: 'clamp(0.8rem, 2.5vw, 1rem)',
     },
     highlightedSection: {
         color: '#e74c3c',
@@ -92,14 +106,15 @@ const styles = {
     deadlineContainer: {
         marginBottom: '20px',
         backgroundColor: '#fff3e6',
-        padding: '10px 16px',
+        padding: '8px 12px',
         borderRadius: '8px',
         border: '1px solid #ffd1a4',
         display: 'inline-block',
+        fontSize: 'clamp(0.85rem, 2.5vw, 1rem)',
     },
     deadlineLabel: {
         fontWeight: '600',
-        marginRight: '8px',
+        marginRight: '6px',
         color: '#e67e22',
     },
     deadline: {
@@ -110,34 +125,45 @@ const styles = {
         marginBottom: '20px',
     },
     questionContainer: {
-        marginBottom: '20px',
-        padding: '15px',
+        marginBottom: '16px',
+        padding: '12px',
         backgroundColor: '#f9f9f9',
         borderRadius: '8px',
     },
     questionTitle: {
         color: '#3498db',
         marginTop: '0',
-        marginBottom: '10px',
-        fontSize: '1.2rem',
+        marginBottom: '8px',
+        fontSize: 'clamp(1rem, 3vw, 1.2rem)',
     },
     questionText: {
         color: '#34495e',
         lineHeight: '1.6',
         margin: '0',
         whiteSpace: 'pre-line',
+        fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
     },
     footer: {
         paddingTop: '15px',
         borderTop: '2px solid #f0f0f0',
         textAlign: 'right',
     },
-    email: {
-        color: '#7f8c8d',
-        fontSize: '0.9rem',
-        margin: '0',
-        fontStyle: 'italic',
+    deleteBtn: {
+        backgroundColor: '#e74c3c',
+        color: '#fff',
+        border: 'none',
+        padding: '10px 16px',
+        borderRadius: '8px',
+        fontSize: 'clamp(0.85rem, 2.5vw, 1rem)',
+        fontWeight: '600',
+        cursor: 'pointer',
+        transition: 'background 0.3s ease',
     },
+};
+
+// ✅ Manual hover effect
+styles.deleteBtn[':hover'] = {
+    backgroundColor: '#c0392b',
 };
 
 export default AssignmentCard;

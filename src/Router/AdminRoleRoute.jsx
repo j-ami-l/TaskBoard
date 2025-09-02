@@ -4,11 +4,11 @@ import { Navigate } from 'react-router';
 import { AuthContext } from '../provider/AuthProvider';
 
 const AdminRoleRoute = ({children}) => {
-    const userInfo = useContext(UserInfoContext)
+    const {userInfo , loading} = useContext(UserInfoContext)
     console.log(userInfo);
 
-    if(!userInfo) return <h1>heeeee.....</h1>
-    if(userInfo?.role != "admin") return <Navigate to={"/addassingmentans"}></Navigate>
+    if(loading) return <h1>heeeee.....</h1>
+    if(userInfo?.role != "admin") return <Navigate to={"/"}></Navigate>
 
     return (
         children

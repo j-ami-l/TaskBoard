@@ -5,7 +5,7 @@ import { UserInfoContext } from "../provider/UserInfoProvider";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext)
-  const userInfo = useContext(UserInfoContext)
+  const {userInfo} = useContext(UserInfoContext)
   const handleLogOut = () => {
     logout()
       .then(res => {
@@ -111,7 +111,7 @@ const Navbar = () => {
             </NavLink>
           </li>
           {
-            userInfo.role != "admin" && <li>
+            userInfo?.role != "admin" && <li>
               <NavLink
                 to="/addassingmentans"
                 className={({ isActive }) =>

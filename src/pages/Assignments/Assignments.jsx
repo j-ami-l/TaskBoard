@@ -26,7 +26,7 @@ const Assignments = () => {
 
     if(!allassignmentsqst) return <h1>loading....</h1>
     return (
-        <div>
+        <div className='w-11/12 mx-auto'>
             {allassignmentsqst.map(assignmentsqst=><AssignmentCard key={assignmentsqst._id} assignmentsqst={assignmentsqst}
             refetch={refetch}></AssignmentCard>)}
         </div>
