@@ -110,7 +110,7 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
             </div>
 
             {/* Footer */}
-            {userInfo.role === "admin" && (
+            {userInfo?.role === "admin" && (
                 <div style={styles.footer}>
                     <button
                         onClick={() => setConfirm({ show: true, id: assignmentsqst._id })}
