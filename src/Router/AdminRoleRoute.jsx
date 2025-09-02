@@ -5,7 +5,7 @@ import { AuthContext } from '../provider/AuthProvider';
 
 const AdminRoleRoute = ({children}) => {
     const {userInfo , loading} = useContext(UserInfoContext)
-    console.log(userInfo);
+    //.log(userInfo);
 
     if(loading) return <h1>heeeee.....</h1>
     if(userInfo?.role != "admin") return <Navigate to={"/"}></Navigate>

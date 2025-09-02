@@ -16,7 +16,6 @@ const Login = () => {
   const handleGoogleSignUp = () => {
     signIntWithGoogle()
       .then(result => {
-        console.log(result);
         if(result.user){
           const newUser = {
             name : result?.user?.displayName,

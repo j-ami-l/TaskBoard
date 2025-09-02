@@ -4,6 +4,9 @@ import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const AddAssignmentAns = () => {
     const [count, setCount] = useState(1);
+    const [message, setMessage] = useState(null); // success/error message
+    const [type, setType] = useState("success"); // "success" or "error"
+
     const { user } = useContext(AuthContext);
     const api = useAxiosSecure();
 
@@ -17,7 +20,6 @@ const AddAssignmentAns = () => {
         const section = form.section.value.trim();
         const checked = false;
 
-        // Collect answers dynamically
         const answers = {};
         for (let i = 1; i <= count; i++) {
             answers[`qst${i}`] = form[`qst${i}`].value.trim();
@@ -26,23 +28,40 @@ const AddAssignmentAns = () => {
         const payload = { name, UniID, answers, email, section, checked };
 
         try {
-            const res = await api.post("/addans", payload);
-            console.log("Response:", res.data);
-            alert("Assignment submitted successfully!");
+            await api.post("/addans", payload);
+            setType("success");
+            setMessage("✅ Assignment submitted successfully!");
             form.reset();
             setCount(1);
         } catch (err) {
             console.error("Error submitting assignment:", err);
-            alert("Failed to submit. Please try again.");
+            setType("error");
+            setMessage("❌ Failed to submit. Please try again.");
         }
+
+        // Hide message automatically after 3s
+        setTimeout(() => setMessage(null), 3000);
     };
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-            <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-6">
+            <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-6 relative">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
                     Submit Assignment Answers
                 </h2>
+
+                {/* Custom Alert */}
+                {message && (
+                    <div
+                        className={`mb-4 p-3 rounded-lg text-sm font-medium transition-all duration-500 ${
+                            type === "success"
+                                ? "bg-green-100 text-green-700 border border-green-300"
+                                : "bg-red-100 text-red-700 border border-red-300"
+                        }`}
+                    >
+                        {message}
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Name */}

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { UserInfoContext } from '../../provider/UserInfoProvider';
 import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import { AuthContext } from '../../provider/AuthProvider';
@@ -6,6 +6,14 @@ import { AuthContext } from '../../provider/AuthProvider';
 const AssignmentCard = ({ assignmentsqst, refetch }) => {
     const api = useAxiosSecure();
     const { user } = useContext(AuthContext);
+    const [alert, setAlert] = useState({ show: false, message: "", type: "" });
+    const { userInfo } = useContext(UserInfoContext);
+
+    // Show custom alert
+    const showAlert = (message, type = "info") => {
+        setAlert({ show: true, message, type });
+        setTimeout(() => setAlert({ show: false, message: "", type: "" }), 5000);
+    };
 
     const handleDltAssingment = async (id) => {
         try {
@@ -14,18 +22,39 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
             });
             if (res.data?.deletedCount) {
                 refetch();
+                showAlert("Assignment deleted successfully!", "success");
             }
-            alert("Assignment deleted!");
         } catch (err) {
             console.error("Delete failed:", err);
+            showAlert("Failed to delete assignment. Please try again.", "error");
         }
     };
 
     const { questions, section, readableDate } = assignmentsqst;
-    const {userInfo} = useContext(UserInfoContext);
 
     return (
         <div style={styles.card}>
+            {/* Custom Alert */}
+            {alert.show && (
+                <div style={{
+                    ...styles.alert,
+                    ...(alert.type === "success" ? styles.alertSuccess : styles.alertError)
+                }}>
+                    <div style={styles.alertContent}>
+                        <span style={styles.alertIcon}>
+                            {alert.type === "success" ? "✓" : "✗"}
+                        </span>
+                        <p style={styles.alertMessage}>{alert.message}</p>
+                        <button 
+                            onClick={() => setAlert({ show: false, message: "", type: "" })}
+                            style={styles.alertClose}
+                        >
+                            ×
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Header Section */}
             <div style={styles.header}>
                 <h2 style={styles.title}>Assignment Questions</h2>
@@ -56,6 +85,8 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
                     <button
                         onClick={() => handleDltAssingment(assignmentsqst._id)}
                         style={styles.deleteBtn}
+                        onMouseOver={(e) => e.target.style.backgroundColor = '#c0392b'}
+                        onMouseOut={(e) => e.target.style.backgroundColor = '#e74c3c'}
                     >
                         🗑 Delete Assignment
                     </button>
@@ -75,6 +106,7 @@ const styles = {
         margin: '16px auto',
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
         maxWidth: '95%', // flexible on mobile
+        position: 'relative',
     },
     header: {
         display: 'flex',
@@ -159,11 +191,49 @@ const styles = {
         cursor: 'pointer',
         transition: 'background 0.3s ease',
     },
-};
-
-// ✅ Manual hover effect
-styles.deleteBtn[':hover'] = {
-    backgroundColor: '#c0392b',
+    // Alert styles
+    alert: {
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        zIndex: 1000,
+        padding: '15px 20px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        minWidth: '300px',
+        maxWidth: '90%',
+    },
+    alertSuccess: {
+        backgroundColor: '#d4edda',
+        borderLeft: '4px solid #28a745',
+        color: '#155724',
+    },
+    alertError: {
+        backgroundColor: '#f8d7da',
+        borderLeft: '4px solid #dc3545',
+        color: '#721c24',
+    },
+    alertContent: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    alertIcon: {
+        fontSize: '20px',
+        marginRight: '10px',
+    },
+    alertMessage: {
+        margin: 0,
+        flex: 1,
+    },
+    alertClose: {
+        background: 'none',
+        border: 'none',
+        fontSize: '20px',
+        cursor: 'pointer',
+        marginLeft: '10px',
+        color: 'inherit',
+    },
 };
 
 export default AssignmentCard;
