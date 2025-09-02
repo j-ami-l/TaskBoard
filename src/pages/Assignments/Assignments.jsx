@@ -15,7 +15,7 @@ const Assignments = () => {
         error,
         refetch,
     } = useQuery({
-        queryKey: ["assignmentsqst", user?.email],
+        queryKey: ["allassignmentsqst", user?.email],
         queryFn: async () => {
             if (!user) return [];
             const res = await api.get(`/allassignmentsqst`);
