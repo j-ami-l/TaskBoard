@@ -5,7 +5,7 @@ import { UserInfoContext } from "../provider/UserInfoProvider";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext)
-  const {userInfo} = useContext(UserInfoContext)
+  const { userInfo } = useContext(UserInfoContext)
   const handleLogOut = () => {
     logout()
       .then(res => {
@@ -88,6 +88,21 @@ const Navbar = () => {
                 </NavLink>
               </li>
             }
+            {
+              userInfo?.role === "admin" &&
+              <li>
+                <NavLink
+                  to="/allassignments"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-indigo-600 font-medium"
+                      : "text-gray-700 hover:text-indigo-500"
+                  }
+                >
+                  Students Submission
+                </NavLink>
+              </li>
+            }
           </ul>
         </div>
 
@@ -96,54 +111,69 @@ const Navbar = () => {
       </div>
 
       {/* Center (Navigation Links - Desktop only) */}
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 gap-4">
-          <li>
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-indigo-600 font-medium"
-                  : "text-gray-700 hover:text-indigo-500"
-              }
-            >
-              Home
-            </NavLink>
-          </li>
-          {
-            userInfo?.role != "admin" && <li>
-              <NavLink
-                to="/addassingmentans"
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-indigo-600 font-medium"
-                    : "text-gray-700 hover:text-indigo-500"
-                }
-              >
-                Submit Answer
-              </NavLink>
-            </li>
-          }
-          {
-            userInfo?.role === "admin" &&
-            <li>
-              <NavLink
-                to="/addassingments"
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-indigo-600 font-medium"
-                    : "text-gray-700 hover:text-indigo-500"
-                }
-              >
-                Add Assignment
-              </NavLink>
-            </li>
-          }
-        </ul>
-      </div>
 
       {/* Right side (Button or Profile) */}
       <div className="navbar-end">
+        <div className="navbar-center hidden lg:flex">
+          <ul className="menu menu-horizontal px-1 gap-4">
+            <li>
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-indigo-600 font-medium"
+                    : "text-gray-700 hover:text-indigo-500"
+                }
+              >
+                Home
+              </NavLink>
+            </li>
+            {
+              userInfo?.role != "admin" && <li>
+                <NavLink
+                  to="/addassingmentans"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-indigo-600 font-medium"
+                      : "text-gray-700 hover:text-indigo-500"
+                  }
+                >
+                  Submit Answer
+                </NavLink>
+              </li>
+            }
+            {
+              userInfo?.role === "admin" &&
+              <li>
+                <NavLink
+                  to="/addassingments"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-indigo-600 font-medium"
+                      : "text-gray-700 hover:text-indigo-500"
+                  }
+                >
+                  Add Assignment
+                </NavLink>
+              </li>
+            }
+            {
+              userInfo?.role === "admin" &&
+              <li>
+                <NavLink
+                  to="/allassignments"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-indigo-600 font-medium"
+                      : "text-gray-700 hover:text-indigo-500"
+                  }
+                >
+                  Students Submission
+                </NavLink>
+              </li>
+            }
+          </ul>
+        </div>
         <a onClick={handleLogOut} className="btn btn-sm bg-indigo-600 text-white hover:bg-indigo-700">
           Log Out
         </a>

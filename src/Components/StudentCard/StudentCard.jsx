@@ -2,12 +2,23 @@ import React, { useState } from 'react';
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-const StudentCard = ({ assignment, onMarkChecked }) => {
+const StudentCard = ({ assignment, onMarkChecked, handleMarkSubmit }) => {
     const [showDetails, setShowDetails] = useState(false);
+    const [editMark, setEditMark] = useState(false);
 
     const handleToggleChecked = () => {
         onMarkChecked(assignment._id, assignment.checked);
     };
+
+    const handleMarkSubmitTogle = e => {
+        const checked = false;
+        e.preventDefault()
+        const mark = e.target.mark.value
+        handleMarkSubmit(assignment?.UniID, mark)
+        setShowDetails(false)
+        onMarkChecked(assignment._id, checked);
+        setEditMark(false)
+    }
 
     return (
         <div className={`mb-6 rounded-xl border-2 p-5 shadow-lg transition-all duration-300 ${assignment.checked ? "bg-gradient-to-br from-green-50 to-emerald-100 border-green-300" : "bg-gradient-to-br from-gray-50 to-blue-50 border-gray-200"}`}>
@@ -15,18 +26,19 @@ const StudentCard = ({ assignment, onMarkChecked }) => {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div className="flex-1 min-w-0">
                     <h3 className="text-lg sm:text-xl font-bold text-gray-800 truncate">
-                        {assignment.name} 
+                        {assignment.name}
                         <span className="text-indigo-600 ml-2">({assignment.UniID})</span>
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">{assignment.section} Section</p>
+                    {assignment.mark && <p>Mark : {assignment.mark}</p>}
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     {/* Check button */}
-                    <button 
+                    <button
                         onClick={handleToggleChecked}
-                        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${assignment.checked 
-                            ? 'bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-md' 
+                        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${assignment.checked
+                            ? 'bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-md'
                             : 'bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 hover:from-gray-300 hover:to-gray-400'}`}
                     >
                         {assignment.checked ? (
@@ -45,7 +57,7 @@ const StudentCard = ({ assignment, onMarkChecked }) => {
                             </>
                         )}
                     </button>
-                    
+
                     {/* Details toggle button */}
                     <button
                         onClick={() => setShowDetails(!showDetails)}
@@ -88,7 +100,7 @@ const StudentCard = ({ assignment, onMarkChecked }) => {
                                     </svg>
                                     <h4 className="font-bold text-white text-lg">{qst.toUpperCase()}</h4>
                                 </div>
-                                
+
                                 <SyntaxHighlighter
                                     language="java"
                                     style={vscDarkPlus}
@@ -107,10 +119,47 @@ const StudentCard = ({ assignment, onMarkChecked }) => {
                             </div>
                         ))}
                     </div>
-                    
+
                     {/* Submission info */}
-                    <div className="mt-5 text-xs text-gray-500 text-right">
-                        Submitted on: {new Date(assignment.submittedAt).toLocaleString()}
+                    <div className="mt-5 flex items-center justify-between border-t pt-4">
+                        {editMark ? (
+                            <form
+                                onSubmit={handleMarkSubmitTogle}
+                                className="flex items-center gap-3 w-full"
+                            >
+                                <input
+                                    type="number"
+                                    name="mark"
+                                    defaultValue={assignment.mark || ""}
+                                    placeholder="Assignment mark"
+                                    className="input flex-1"
+                                />
+                                <button type="submit" className="btn">
+                                    Save
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setEditMark(false)}
+                                    className="btn bg-gray-300 text-gray-700"
+                                >
+                                    Cancel
+                                </button>
+                            </form>
+                        ) : (
+                            <div className="flex items-center justify-between w-full">
+                                {assignment.mark ? (
+                                    <h3 className="text-lg font-bold text-gray-800">
+                                        Mark:
+                                        <span className="text-indigo-600 ml-2">{assignment.mark}</span>
+                                    </h3>
+                                ) : (
+                                    <p className="text-gray-500 italic">No mark given yet</p>
+                                )}
+                                <button onClick={() => setEditMark(true)} className="btn">
+                                    {assignment.mark ? "Edit Mark" : "Add Mark"}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

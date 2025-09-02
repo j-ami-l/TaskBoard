@@ -1,13 +1,11 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../../provider/AuthProvider";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
-import { UserInfoContext } from "../../provider/UserInfoProvider";
-import { Link } from "react-router";
+
 
 const AddAssignments = () => {
     const [count, setCount] = useState(1);
     const { user } = useContext(AuthContext);
-    const { userInfo } = useContext(UserInfoContext);
     const [alert, setAlert] = useState({ show: false, message: "", type: "" });
     const api = useAxiosSecure();
 
@@ -93,15 +91,6 @@ const AddAssignments = () => {
                         </button>
                     </div>
                 </div>
-            )}
-
-            {/* Admin Navigation */}
-            {userInfo?.role === "admin" && (
-                <Link to="/allassignments">
-                    <button className="btn btn-outline my-5 mx-auto">
-                        View Students' Assignments
-                    </button>
-                </Link>
             )}
 
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-md p-6">

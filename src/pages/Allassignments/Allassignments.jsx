@@ -55,9 +55,49 @@ const Allassignments = () => {
         },
     });
 
+
+    const updateAssignmentMarkMutation = useMutation({
+        mutationFn: ({ id, mark }) => 
+            api.patch(`/updatemark?email=${user.email}`, { id, mark }),
+        onMutate: async ({ id, mark }) => {
+            // Cancel outgoing refetches to avoid overwriting
+            await queryClient.cancelQueries({ queryKey: ["assignments", user?.email] });
+            
+            // Snapshot previous value
+            const previousAssignments = queryClient.getQueryData(["assignments", user?.email]);
+            
+            // Optimistically update to new value
+            queryClient.setQueryData(["assignments", user?.email], (old) =>
+                old.map(assignment =>
+                    assignment._id === id ? { ...assignment, mark: mark } : assignment
+                )
+            );
+            
+            return { previousAssignments };
+        },
+        onError: (err, variables, context) => {
+            // Revert to previous value on error
+            queryClient.setQueryData(["assignments", user?.email], context.previousAssignments);
+        },
+        onSettled: () => {
+            // Refetch after error or success
+            queryClient.invalidateQueries({ queryKey: ["assignments", user?.email] });
+        },
+    });
+
+
+
     const handleMarkChecked = (id, checked) => {
         updateAssignmentMutation.mutate({ id, checked });
     };
+
+
+
+
+
+    const handleMarkSubmit = (id , mark) =>{
+        updateAssignmentMarkMutation.mutate({id , mark})
+    }
 
     const [searchId, setSearchId] = useState("");
     const [filteredStudent, setFilteredStudent] = useState(null);
@@ -120,7 +160,8 @@ const Allassignments = () => {
                     <h2 className="text-xl font-bold mb-4">Search Result</h2>
                     <StudentCard 
                         assignment={filteredStudent} 
-                        onMarkChecked={handleMarkChecked} 
+                        onMarkChecked={handleMarkChecked}
+                        handleMarkSubmit={handleMarkSubmit}
                     />
                 </div>
             ) : (
@@ -131,7 +172,8 @@ const Allassignments = () => {
                             <StudentCard 
                                 key={assignment.UniID} 
                                 assignment={assignment} 
-                                onMarkChecked={handleMarkChecked} 
+                                onMarkChecked={handleMarkChecked}
+                                handleMarkSubmit={handleMarkSubmit}
                             />
                         ))}
                     </div>
