@@ -7,6 +7,7 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
     const api = useAxiosSecure();
     const { user } = useContext(AuthContext);
     const [alert, setAlert] = useState({ show: false, message: "", type: "" });
+    const [confirm, setConfirm] = useState({ show: false, id: null }); // confirmation modal
     const { userInfo } = useContext(UserInfoContext);
 
     // Show custom alert
@@ -55,6 +56,35 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
                 </div>
             )}
 
+            {/* Confirmation Modal */}
+            {confirm.show && (
+                <div style={styles.confirmOverlay}>
+                    <div style={styles.confirmBox}>
+                        <h3 style={styles.confirmTitle}>Confirm Delete</h3>
+                        <p style={styles.confirmText}>
+                            Are you sure you want to delete this assignment?
+                        </p>
+                        <div style={styles.confirmActions}>
+                            <button
+                                style={styles.confirmCancel}
+                                onClick={() => setConfirm({ show: false, id: null })}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                style={styles.confirmDelete}
+                                onClick={() => {
+                                    handleDltAssingment(confirm.id);
+                                    setConfirm({ show: false, id: null });
+                                }}
+                            >
+                                Yes, Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header Section */}
             <div style={styles.header}>
                 <h2 style={styles.title}>Assignment Questions</h2>
@@ -83,7 +113,7 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
             {userInfo.role === "admin" && (
                 <div style={styles.footer}>
                     <button
-                        onClick={() => handleDltAssingment(assignmentsqst._id)}
+                        onClick={() => setConfirm({ show: true, id: assignmentsqst._id })}
                         style={styles.deleteBtn}
                         onMouseOver={(e) => e.target.style.backgroundColor = '#c0392b'}
                         onMouseOut={(e) => e.target.style.backgroundColor = '#e74c3c'}
@@ -105,12 +135,12 @@ const styles = {
         padding: '5%',
         margin: '16px auto',
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-        maxWidth: '95%', // flexible on mobile
+        maxWidth: '95%',
         position: 'relative',
     },
     header: {
         display: 'flex',
-        flexWrap: 'wrap', // stack on mobile
+        flexWrap: 'wrap',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '15px',
@@ -121,7 +151,7 @@ const styles = {
     title: {
         color: '#2c3e50',
         margin: 0,
-        fontSize: 'clamp(1.2rem, 4vw, 1.8rem)', // responsive font
+        fontSize: 'clamp(1.2rem, 4vw, 1.8rem)',
     },
     sectionBadge: {
         backgroundColor: '#e8f4fc',
@@ -233,6 +263,62 @@ const styles = {
         cursor: 'pointer',
         marginLeft: '10px',
         color: 'inherit',
+    },
+    // Confirmation Modal
+    confirmOverlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 2000,
+    },
+    confirmBox: {
+        background: '#fff',
+        borderRadius: '12px',
+        padding: '20px',
+        width: '90%',
+        maxWidth: '400px',
+        textAlign: 'center',
+        boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
+    },
+    confirmTitle: {
+        fontSize: '1.4rem',
+        marginBottom: '10px',
+        color: '#2c3e50',
+    },
+    confirmText: {
+        marginBottom: '20px',
+        color: '#555',
+    },
+    confirmActions: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        gap: '10px',
+    },
+    confirmCancel: {
+        flex: 1,
+        background: '#bdc3c7',
+        border: 'none',
+        padding: '10px',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        color: '#fff',
+        fontWeight: '600',
+    },
+    confirmDelete: {
+        flex: 1,
+        background: '#e74c3c',
+        border: 'none',
+        padding: '10px',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        color: '#fff',
+        fontWeight: '600',
     },
 };
 
