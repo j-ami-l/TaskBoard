@@ -42,11 +42,20 @@ export const router = createBrowserRouter([
                         <AddAssingments></AddAssingments>
                     </AdminRoleRoute>
                 </PrivateRoute>
+            },
+            {
+                path:"/*",
+                element : <h1>path was not found</h1>
             }
         ]
     },
     {
         path: "/login",
         element: <Login></Login>
+    },
+    {
+        path : '/*',
+        element : <h1>path was not found</h1>
     }
+    
 ])

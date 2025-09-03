@@ -1,14 +1,20 @@
-import React, { useContext, useState } from 'react';
-import { UserInfoContext } from '../../provider/UserInfoProvider';
-import useAxiosSecure from '../../Hooks/useAxiosSecure';
-import { AuthContext } from '../../provider/AuthProvider';
+import React, { useContext, useState } from "react";
+import { UserInfoContext } from "../../provider/UserInfoProvider";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import { AuthContext } from "../../provider/AuthProvider";
+import QuestionsEditor from "./QuestionsEditor";
 
-const AssignmentCard = ({ assignmentsqst, refetch }) => {
+const AssignmentCard = ({ assignmentsqst, refetch, handleUpdate }) => {
     const api = useAxiosSecure();
     const { user } = useContext(AuthContext);
-    const [alert, setAlert] = useState({ show: false, message: "", type: "" });
-    const [confirm, setConfirm] = useState({ show: false, id: null }); // confirmation modal
     const { userInfo } = useContext(UserInfoContext);
+
+    const [alert, setAlert] = useState({ show: false, message: "", type: "" });
+    const [confirm, setConfirm] = useState({ show: false, id: null });
+    const [updateModal, setUpdateModal] = useState({
+        show: false,
+        assignment: null,
+    });
 
     // Show custom alert
     const showAlert = (message, type = "info") => {
@@ -16,6 +22,7 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
         setTimeout(() => setAlert({ show: false, message: "", type: "" }), 5000);
     };
 
+    // Delete assignment
     const handleDltAssingment = async (id) => {
         try {
             const res = await api.delete('/dltassignment', {
@@ -31,23 +38,63 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
         }
     };
 
+    // Update assignment
+    const handleFormUpdate = async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const section = form.section.value.trim();
+        const title = form.title.value.trim();
+        const expiredDate = form.expiredDate.value;
+
+        const readableDate = new Date(expiredDate).toLocaleString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+
+        const questions = {};
+        for (let i = 0; i < form.querySelectorAll("textarea").length; i++) {
+            questions[`qst${i + 1}`] = form[`qst${i + 1}`].value.trim();
+        }
+
+        const payload = {
+            section,
+            title,
+            questions,
+            email: user?.email,
+            expiredDate,
+            readableDate,
+        };
+
+        handleUpdate(assignmentsqst._id, payload)
+    };
+
     const { questions, section, readableDate, title } = assignmentsqst;
 
     return (
         <div style={styles.card}>
             {/* Custom Alert */}
             {alert.show && (
-                <div style={{
-                    ...styles.alert,
-                    ...(alert.type === "success" ? styles.alertSuccess : styles.alertError)
-                }}>
+                <div
+                    style={{
+                        ...styles.alert,
+                        ...(alert.type === "success"
+                            ? styles.alertSuccess
+                            : styles.alertError),
+                    }}
+                >
                     <div style={styles.alertContent}>
                         <span style={styles.alertIcon}>
                             {alert.type === "success" ? "✓" : "✗"}
                         </span>
                         <p style={styles.alertMessage}>{alert.message}</p>
                         <button
-                            onClick={() => setAlert({ show: false, message: "", type: "" })}
+                            onClick={() =>
+                                setAlert({ show: false, message: "", type: "" })
+                            }
                             style={styles.alertClose}
                         >
                             ×
@@ -85,12 +132,78 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
                 </div>
             )}
 
-            {/* Header Section */}
+            {/* Update Modal */}
+            {updateModal.show && (
+                <div style={styles.confirmOverlay}>
+                    <div style={styles.confirmBox} className="max-h-[80vh] overflow-y-auto">
+                        <h3 style={styles.confirmTitle}>Update Assignment</h3>
+
+                        <form onSubmit={handleFormUpdate} className="space-y-4 text-left">
+                            {/* Section */}
+                            <div>
+                                <label>Section</label>
+                                <input
+                                    type="text"
+                                    name="section"
+                                    defaultValue={updateModal.assignment.section}
+                                    required
+                                    className="w-full border px-2 py-1 rounded"
+                                />
+                            </div>
+
+                            {/* Title */}
+                            <div>
+                                <label>Assignment Title</label>
+                                <input
+                                    type="text"
+                                    name="title"
+                                    defaultValue={updateModal.assignment.title}
+                                    required
+                                    className="w-full border px-2 py-1 rounded"
+                                />
+                            </div>
+
+                            {/* Deadline */}
+                            <div>
+                                <label>Deadline</label>
+                                <input
+                                    type="datetime-local"
+                                    name="expiredDate"
+                                    defaultValue={updateModal.assignment.expiredDate?.slice(0, 16)}
+                                    required
+                                    className="w-full border px-2 py-1 rounded"
+                                />
+                            </div>
+
+                            {/* Questions */}
+                            <QuestionsEditor assignment={updateModal.assignment} />
+
+                            {/* Footer Buttons */}
+                            <div className="flex justify-between mt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setUpdateModal({ show: false, assignment: null })}
+                                    className="px-3 py-1 rounded bg-gray-400 text-white"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-3 py-1 rounded bg-green-600 text-white"
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+
+            {/* Header */}
             <div style={styles.header}>
-                {/* Assignment Title */}
                 <div>
                     {title && <h1 style={styles.assignmentTitle}>{title}</h1>}
-
                     <h2 style={styles.title}>Assignment Questions</h2>
                 </div>
                 <div style={styles.sectionBadge}>
@@ -98,8 +211,7 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
                 </div>
             </div>
 
-
-            {/* Deadline Section */}
+            {/* Deadline */}
             <div style={styles.deadlineContainer}>
                 <span style={styles.deadlineLabel}>Deadline:</span>
                 <span style={styles.deadline}>{readableDate}</span>
@@ -116,18 +228,28 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
             </div>
 
             {/* Footer */}
+            {/* Footer */}
             {userInfo?.role === "admin" && (
-                <div style={styles.footer}>
+                <div className="flex lg:block" style={styles.footer}>
                     <button
-                        onClick={() => setConfirm({ show: true, id: assignmentsqst._id })}
+                        onClick={() =>
+                            setUpdateModal({ show: true, assignment: assignmentsqst })
+                        }
+                        style={styles.updateBtn}
+                    >
+                        ✏ Update Assignment
+                    </button>
+                    <button
+                        onClick={() =>
+                            setConfirm({ show: true, id: assignmentsqst._id })
+                        }
                         style={styles.deleteBtn}
-                        onMouseOver={(e) => e.target.style.backgroundColor = '#c0392b'}
-                        onMouseOut={(e) => e.target.style.backgroundColor = '#e74c3c'}
                     >
                         🗑 Delete Assignment
                     </button>
                 </div>
             )}
+
         </div>
     );
 };
@@ -332,6 +454,19 @@ const styles = {
         color: '#fff',
         fontWeight: '600',
     },
+    updateBtn: {
+        backgroundColor: '#3498db', // blue shade for edit
+        color: '#fff',
+        border: 'none',
+        padding: '10px 16px',
+        borderRadius: '8px',
+        fontSize: 'clamp(0.85rem, 2.5vw, 1rem)',
+        fontWeight: '600',
+        cursor: 'pointer',
+        transition: 'background 0.3s ease',
+        marginRight: '10px',
+    },
+
 };
 
 export default AssignmentCard;
