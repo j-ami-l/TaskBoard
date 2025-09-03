@@ -4,7 +4,7 @@ import { AuthContext } from '../provider/AuthProvider';
 
 const useAxiosSecure = () => {
     const api = axios.create({
-        baseURL : 'http://localhost:3000'
+        baseURL : 'https://taskboard-server-olive.vercel.app'
     })
     const {user} = useContext(AuthContext)
 

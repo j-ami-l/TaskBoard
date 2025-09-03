@@ -20,6 +20,7 @@ const AddAssignments = () => {
 
         const form = e.target;
         const section = form.section.value.trim();
+        const title = form.title.value.trim();
         const expiredDate = form.expiredDate.value;
 
         // Convert deadline to readable date
@@ -40,6 +41,7 @@ const AddAssignments = () => {
 
         const payload = {
             section,
+            title,
             questions,
             email: user?.email,
             expiredDate,
@@ -108,6 +110,19 @@ const AddAssignments = () => {
                             type="text"
                             name="section"
                             placeholder="Enter section"
+                            required
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Assigment Title
+                        </label>
+                        <input
+                            type="text"
+                            name="title"
+                            placeholder="Assigment Title"
                             required
                             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />

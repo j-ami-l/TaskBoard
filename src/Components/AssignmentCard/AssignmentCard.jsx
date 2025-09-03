@@ -31,7 +31,7 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
         }
     };
 
-    const { questions, section, readableDate } = assignmentsqst;
+    const { questions, section, readableDate, title } = assignmentsqst;
 
     return (
         <div style={styles.card}>
@@ -46,7 +46,7 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
                             {alert.type === "success" ? "✓" : "✗"}
                         </span>
                         <p style={styles.alertMessage}>{alert.message}</p>
-                        <button 
+                        <button
                             onClick={() => setAlert({ show: false, message: "", type: "" })}
                             style={styles.alertClose}
                         >
@@ -87,11 +87,17 @@ const AssignmentCard = ({ assignmentsqst, refetch }) => {
 
             {/* Header Section */}
             <div style={styles.header}>
-                <h2 style={styles.title}>Assignment Questions</h2>
+                {/* Assignment Title */}
+                <div>
+                    {title && <h1 style={styles.assignmentTitle}>{title}</h1>}
+
+                    <h2 style={styles.title}>Assignment Questions</h2>
+                </div>
                 <div style={styles.sectionBadge}>
                     Section: <span style={styles.highlightedSection}>{section}</span>
                 </div>
             </div>
+
 
             {/* Deadline Section */}
             <div style={styles.deadlineContainer}>
@@ -147,6 +153,12 @@ const styles = {
         paddingBottom: '12px',
         borderBottom: '2px solid #f0f0f0',
         gap: '10px',
+    },
+    assignmentTitle: {
+        fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+        fontWeight: '700',
+        color: '#2c3e50',
+        margin: '0 0 10px 0',
     },
     title: {
         color: '#2c3e50',
