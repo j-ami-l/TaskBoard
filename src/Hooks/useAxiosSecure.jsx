@@ -4,12 +4,12 @@ import { AuthContext } from '../provider/AuthProvider';
 
 const useAxiosSecure = () => {
     const api = axios.create({
-        baseURL : 'https://taskboard-server-olive.vercel.app'
+        baseURL: 'https://taskboard-server-olive.vercel.app'
     })
-    const {user} = useContext(AuthContext)
+    const { user } = useContext(AuthContext)
 
     api.interceptors.request.use(
-        (config)=>{
+        (config) => {
             config.headers.Authorization = `Bearer ${user?.accessToken}`
             return config
         }
