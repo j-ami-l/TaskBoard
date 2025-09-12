@@ -36,7 +36,8 @@ const Allassignments = () => {
         const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
 
         // Create Blob and trigger download
-        const file = new Blob([excelBuffer], { type: "application/octet-stream" });
+        const file = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }
+        );
         saveAs(file, `${sectionName}_students.xlsx`);
     };
 
